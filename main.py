@@ -66,7 +66,7 @@ async def load_model(path_name: str):
 
 @app.get("/load-model/{path_name}")
 async def load_model(path_name: str):
-    prefix = f"{path_name}/"  
+    prefix = f"{path_name}/"
 
     try:
         listed = s3.list_objects_v2(
@@ -79,28 +79,29 @@ async def load_model(path_name: str):
     if "Contents" not in listed:
         raise HTTPException(404, f"No files found in S3 folder: {prefix}")
 
-    # Extract all file names in folder
+    # Extract file names
     files = [item["Key"] for item in listed["Contents"]]
 
     obj_files = [f for f in files if f.endswith(".obj")]
     mtl_files = [f for f in files if f.endswith(".mtl")]
+    details_file = next((f for f in files if f.endswith("details.json")), None)
 
     if not obj_files:
         raise HTTPException(404, "No OBJ files found in S3 folder")
 
     rendering_elements = []
 
+    # Process OBJ + MTL files
     for obj_key in obj_files:
-        obj_filename = obj_key.split("/")[-1]   
+        obj_filename = obj_key.split("/")[-1]
         base_name = obj_filename.replace(".obj", "")
 
-        # Read OBJ content
+        # Read OBJ text
         obj_data = s3.get_object(Bucket=BUCKET_NAME, Key=obj_key)
         obj_text = obj_data["Body"].read().decode("utf-8")
 
-        # Find matching MTL
+        # Read MTL if exists
         mtl_key = f"{path_name}/{base_name}.mtl"
-
         mtl_text = ""
         if mtl_key in mtl_files:
             mtl_data = s3.get_object(Bucket=BUCKET_NAME, Key=mtl_key)
@@ -112,4 +113,18 @@ async def load_model(path_name: str):
             "mtlContent": mtl_text
         })
 
-    return {"renderingElements": rendering_elements}
+    details = None
+    if details_file:
+        details_obj = s3.get_object(Bucket=BUCKET_NAME, Key=details_file)
+        details_text = details_obj["Body"].read().decode("utf-8")
+
+        try:
+            import json
+            details = json.loads(details_text)
+        except:
+            details = None
+
+    return {
+        "renderingElements": rendering_elements,
+        "details": details
+    }
