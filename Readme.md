@@ -1,19 +1,39 @@
-# 1. Create Virtual Environment
+# 0. Create .env file
+```bash
+ALLOWED_ORIGIN1=<Your Local Host>
+ALLOWED_ORIGIN2=<Your Production Host>
+```
+
+# 1. Create 3d-models folder
+```bash
+mkdir 3d-models
+```
+
+# 2. Make subfolders inside 3d-models folder and put all .obj and .mtl files inside them
+```bash
+mkdir 3d-models/liver
+mkdir 3d-models/heart
+mkdir 3d-models/kidney
+mkdir 3d-models/lung
+mkdir 3d-models/stomach
+```
+
+# 3. Create Virtual Environment
 ```bash
 python -m venv venv
 ```
 
-# 2. Activate Virtual Environment
+# 4. Activate Virtual Environment
 ```bash
 venv\Scripts\activate
 ```
 
-# 3. Install Dependencies
+# 5. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-# 4. Run the Server
+# 6. Run the Server
 ```bash
 uvicorn main:app --reload --port 5000
 ```
