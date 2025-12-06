@@ -1,3 +1,7 @@
+# Sample
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3141e9ea-5834-43cf-99f8-e2ff6952ba40" />
+
+
 # 0. Create .env file
 ```bash
 ALLOWED_ORIGIN1=<Your Local Host>
